@@ -1,4 +1,5 @@
 #pragma once
+#include "Player.h"
 #include "Animation.h"
 #include <iostream>
 using namespace std;

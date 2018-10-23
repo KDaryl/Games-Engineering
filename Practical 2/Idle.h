@@ -4,8 +4,11 @@
 
 class Idle : public State
 {
+private:
+	Player* m_player;
+
 public:
-	Idle() {};
+	Idle(Player*player) { m_player = player; };
 	~Idle() {};
 	void jump(Animation* a);
 	void crouch(Animation* a);

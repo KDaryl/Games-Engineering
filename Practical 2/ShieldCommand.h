@@ -7,8 +7,8 @@ class ShieldCommand : public Command
 {
 public:
 	ShieldCommand(Player * player) : m_player(player) {}
-	void execute() { m_player->shield(); }
-	void undo() { m_player->undoShield(); }
+	void execute() { m_player->getAnimation().shield(); }
+	void undo() { m_player->getAnimation().idle(); }
 private:
 	Player * m_player;
 };

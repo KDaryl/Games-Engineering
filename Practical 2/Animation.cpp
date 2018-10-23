@@ -1,19 +1,22 @@
 #include "Animation.h"
+#include "Player.h"
 #include "Idle.h"
+#include "Jump.h"
+#include "Shield.h"
+#include "Melee.h"
+#include "Crouch.h"
+#include "Fire.h"
 
-Animation::Animation()
+Animation::Animation(Player* player)
 {
-	m_current = new Idle();
+	m_player = player;
+	m_current = new Idle(player);
 }
 
 Animation::~Animation()
 {
 }
 
-void Animation::update()
-{
-
-}
 
 void Animation::idle()
 {

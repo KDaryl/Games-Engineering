@@ -128,7 +128,7 @@ int main(int argc, char* args[])
 
 			//---------
 
-			cout << "Controls:\nJump: SPACE\nFire: 1\nCrouch: 2\nMelee: 3\nShield: 4\nUndo: U\nRedo: R\n****************\n" << endl;
+			cout << "Controls:\nJump: SPACE\nFire: 1\nCrouch: 2\nMelee: 3\nShield: 4\n****************\n" << endl;
 
 			//While application is running
 			while (!quit)
@@ -149,6 +149,8 @@ int main(int argc, char* args[])
 							cmd->execute();
 					}
 				}
+
+				player->draw(*gScreenSurface); //Draw the player
 
 				//Update the surface
 				SDL_UpdateWindowSurface(gWindow);

@@ -7,8 +7,8 @@ class MeleeCommand : public Command
 {
 public:
 	MeleeCommand(Player * player) : m_player(player) {}
-	void execute() { m_player->melee(); }
-	void undo() { m_player->undoMelee(); }
+	void execute() { m_player->getAnimation().melee(); }
+	void undo() { m_player->getAnimation().idle(); }
 private:
 	Player * m_player;
 };

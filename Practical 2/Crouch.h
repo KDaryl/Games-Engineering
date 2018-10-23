@@ -3,13 +3,18 @@
 
 class Crouch : public State
 {
+private:
+	Player* m_player;
+
 public:
-	Crouch() {};
+	Crouch(Player*player) { m_player = player; };
 	~Crouch() {};
 
 	void idle(Animation* a);
+	void crouch(Animation* a);
+	void jump(Animation* a);
 	void melee(Animation* a);
-	void shield(Animation* a);
 	void fire(Animation* a);
+	void shield(Animation* a);
 };
 
