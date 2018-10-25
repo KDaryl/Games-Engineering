@@ -8,6 +8,11 @@ and may not be redistributed without written permission.*/
 #include "Entity.h"
 #include "RenderComponent.h"
 #include "RenderSystem.h"
+#include "AiSystem.h"
+#include "ControlSystem.h"
+#include "PositionComponent.h"
+#include "CollisionSystem.h"
+#include "HealthComponent.h"
 
 using namespace std;
 
@@ -44,7 +49,7 @@ bool init()
 	else
 	{
 		//Create window
-		gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		gWindow = SDL_CreateWindow("Entity Component System", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (gWindow == NULL)
 		{
 			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -102,15 +107,67 @@ int main(int argc, char* args[])
 
 			//Our variables
 			//---------
-			Entity player;
+			Entity player("Player"), alien("Alien"), dog("Dog"), cat("Cat");
 			RenderSystem renderSystem;
-			renderSystem.setWindow(*gScreenSurface);
-			RenderComponent renderComp;
-			renderComp.setColor(255, 125, 70);
-			renderComp.setRect(SCREEN_WIDTH / 2 - 75, SCREEN_HEIGHT / 2 -75, 150, 150);
+			ControlSystem controlSystem;
+			CollisionSystem collisionSystem;
+			AiSystem aiSystem;
+			RenderComponent pRenderComp, aRenderComp, dRenderComp, cRenderComp;
+			PositionComponent pPosComp, aPosComp, dPosComp, cPosComp;
+			HealthComponent pHpComp, aHpComp, dHpComp, cHpComp; //Alien, dog, cat health, Player has unlimited health
 
-			player.addComponent("RenderComp", renderComp);
+			//Set component values
+			/* Player - Orange */
+			pPosComp.setPosition(100, 100);
+			pRenderComp.setColor(255, 125, 70);
+			pRenderComp.setRect(pPosComp.getPosition().first - 25, pPosComp.getPosition().second -25, 50, 50);
+			/* Alien - Green */
+			aPosComp.setPosition(400, 350);
+			aRenderComp.setColor(125, 255, 70);
+			aRenderComp.setRect(aPosComp.getPosition().first - 25, aPosComp.getPosition().second - 25, 50, 50);
+			/* Dog - Yellow */
+			dPosComp.setPosition(500, 420);
+			dRenderComp.setColor(255, 255, 70);
+			dRenderComp.setRect(dPosComp.getPosition().first - 25, dPosComp.getPosition().second - 25, 50, 50);
+			/* Cat - Blue */
+			cPosComp.setPosition(200, 200);
+			cRenderComp.setColor(70, 255, 255);
+			cRenderComp.setRect(cPosComp.getPosition().first - 25, cPosComp.getPosition().second - 25, 50, 50);
+
+			//Add components to Entities
+			/* Player - Orange */
+			player.addComponent("RenderComp", pRenderComp);
+			player.addComponent("PositionComp", pPosComp);
+			player.addComponent("HealthComp", pHpComp);
+			/* Alien - Green */
+			alien.addComponent("RenderComp", aRenderComp);
+			alien.addComponent("PositionComp", aPosComp);
+			alien.addComponent("HealthComp", aHpComp);
+			/* Dog - Yellow */
+			dog.addComponent("RenderComp", dRenderComp);
+			dog.addComponent("PositionComp", dPosComp);
+			dog.addComponent("HealthComp", dHpComp);
+			/* Cat - Blue */
+			cat.addComponent("RenderComp", cRenderComp);
+			cat.addComponent("PositionComp", cPosComp);
+			cat.addComponent("HealthComp", cHpComp);
+
+			//Add entities/objects to our systems
 			renderSystem.addEntity(player);
+			renderSystem.addEntity(alien);
+			renderSystem.addEntity(dog);
+			renderSystem.addEntity(cat);
+
+			controlSystem.addEntity(player);
+
+			aiSystem.addEntity(alien);
+
+			collisionSystem.addEntity(player);
+			collisionSystem.addEntity(alien);
+			collisionSystem.addEntity(dog);
+			collisionSystem.addEntity(cat);
+
+			renderSystem.setWindow(*gScreenSurface);
 			//---------
 
 			//While application is running
@@ -124,12 +181,27 @@ int main(int argc, char* args[])
 					{
 						quit = true;
 					}
+					//If user presses a key, call the control system to handle input
+					else if (e.type == SDL_KEYDOWN)
+					{
+						controlSystem.handleInput(e); //Handle input in the control system
+					}
 				}
+
+				//UPDATE
+				aiSystem.update(SCREEN_WIDTH);
+				collisionSystem.handleCollisions();
+
+				//DRAW
+				//Clear the entire screen
+				SDL_FillRect(gScreenSurface, NULL, 0x000000);
 
 				renderSystem.draw(); //Draw all of our render components
 
 				//Update the surface
 				SDL_UpdateWindowSurface(gWindow);
+
+				system("CLS");
 			}
 		}
 	}

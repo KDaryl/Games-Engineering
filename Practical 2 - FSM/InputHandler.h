@@ -33,22 +33,31 @@ public:
 			return previous;
 			break;
 		case SDLK_u: //Undo
-			if (previous && canUndo)
+			//if (previous && canUndo)
+			//{
+			//	previous->undo();
+
+			//	canRedo = true; //Set it so that we can redo
+			//	canUndo = false;
+			//}
+			if (previous)
 			{
 				previous->undo();
-
-				canRedo = true; //Set it so that we can redo
-				canUndo = false;
 			}
 			return nullptr;
 			break;
 		case SDLK_r: //Redo
-			if (previous && canRedo)
+			//if (previous && canRedo)
+			//{
+			//	previous->execute();
+
+			//	canRedo = false; //Set it so that we cant redo
+			//	canUndo = true;
+			//}
+
+			if (previous)
 			{
 				previous->execute();
-
-				canRedo = false; //Set it so that we cant redo
-				canUndo = true;
 			}
 			return nullptr;
 			break;
