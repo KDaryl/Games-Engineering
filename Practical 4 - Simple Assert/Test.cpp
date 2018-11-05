@@ -1,20 +1,29 @@
 #include <assert.h>
+#include <vector>
 
-class Game; //TBI
-
-void main()
+class Test
 {
-	//Create game object used to play the game
-	Game game;
+public:
+	Test() {}
 
-	//Test that numbers are not repeated
-	assert(game.play(1, 2, 3, 4, 5, 6) == true); //Should Pass
-	assert(game.play(7, 8, 9, 10, 11, 12) == true); //Should Pass
-	assert(game.play(1, 2, 3, 4, 4, 4) == false); //Should Fail
-	assert(game.play(1, 1, 1, 2, 3, 4) == false); //Should Fail
+	void size(std::vector<int> v) //Tests that 6 numbers were passed
+	{
+		assert(v.size == 6);
+	}
 
-	//Test that numbers are between 1-46
-	assert(game.play(0, 2, 3, 4, 5, 6) == false); //Should Fail due to 0
-	assert(game.play(1, 2, 3, 4, 5, 46) == false); //Should Pass
-	assert(game.play(1, 2, 3, 4, 5, 47) == false); //Should Fail due to 47
-}
+	void range(std::vector<int> v)
+	{
+		for (auto& val : v) //Loop through each value
+		{
+			assert(val >= 1 && val <= 46);
+		}
+	}
+
+	void repeated(std::vector<int> v)
+	{
+		for (auto& a : v)
+		{
+			assert(std::count(v.begin(), v.end(), a) == 1); //Tests if there is only 1 occurance of (a) in the vector ie. no duplicates
+		}
+	}
+};
