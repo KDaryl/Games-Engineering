@@ -18,6 +18,13 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ApplicationMain.cpp" />
+    <ClCompile Include="Game.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{EA587083-385B-4B41-B24B-2285FAC0E77F}</ProjectGuid>

@@ -1,13 +1,18 @@
 #include "Test.h"
+#include "../Game.h"
 
 void main()
 {
 	Test test; //Used for assertions
+	Game game;
 
-	//Create game obj TBI
+	game.run();
 
-	//use this for asserts
-	//test.range(game.values());
+	test.range(game.values());
+	test.repeated(game.values());
+	test.size(game.values());
+
+	std::cout << "All tests passed" << std::endl;
 
 	system("Pause");
 }

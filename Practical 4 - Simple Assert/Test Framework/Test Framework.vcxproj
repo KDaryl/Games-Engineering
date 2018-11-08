@@ -118,8 +118,14 @@
     <ClInclude Include="Test.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Game.cpp" />
     <ClCompile Include="Test.cpp" />
     <ClCompile Include="TestMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Practical 4 - Simple Assert.vcxproj">
+      <Project>{ea587083-385b-4b41-b24b-2285fac0e77f}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
