@@ -158,6 +158,7 @@ int main(int argc, char* args[])
 			renderSystem.addEntity(dog);
 			renderSystem.addEntity(cat);
 
+			controlSystem.addEntity(dog);
 			controlSystem.addEntity(player);
 
 			aiSystem.addEntity(alien);
