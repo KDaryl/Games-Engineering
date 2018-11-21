@@ -36,7 +36,14 @@ void main()
 
 bool hasSixValues(std::vector<int>& v)
 {
-	return v.size() == 6 ? true : false;
+	bool rightSize = true;
+
+	if (v.size() == 6)
+		rightSize = true;
+	else
+		rightSize = false;
+
+	return rightSize;
 }
 
 bool inRange(std::vector<int>& v)
@@ -52,7 +59,6 @@ bool inRange(std::vector<int>& v)
 
 bool notRepeated(std::vector<int>& v)
 {
-
 	for (auto& val : v)
 	{
 		if (std::count(v.begin(), v.end(), val) > 1)
