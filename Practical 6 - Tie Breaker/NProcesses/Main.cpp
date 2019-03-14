@@ -7,7 +7,7 @@ std::vector<std::thread*> threads;
 std::vector<int> in, last;
 
 //Change thread count to see amounts of threads working independantly
-int threadCount =6;
+int threadCount = 6;
 
 //Methods
 void cs(int index);

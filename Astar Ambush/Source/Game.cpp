@@ -10,7 +10,7 @@ Game::Game(int fps) :
 
 void Game::update(double dt)
 {
-
+	m_input.updateInput();
 }
 
 void Game::draw()
@@ -95,7 +95,7 @@ bool Game::init()
 	else
 	{
 		//Create window
-		m_window = SDL_CreateWindow("Cyber Punch", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		m_window = SDL_CreateWindow("A* Ambush - Daryl Keogh", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (m_window == NULL)
 		{
 			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
