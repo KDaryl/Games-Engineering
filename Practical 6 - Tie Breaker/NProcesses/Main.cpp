@@ -1,46 +1,45 @@
 #include <iostream>
+#include <vector>
 #include <thread>
 
-void cs1();
-void cs2();
-bool in1 = false, in2 = false, lastCs1 = false;
+//Public variables
+std::vector<std::thread*> threads;
+std::vector<bool> in, last;
+int threadCount = 10;
+int lastIndex = 0;
+
+//Methods
+void cs(int index);
 
 void main()
 {
-	//Petersons algorithm
-	std::thread p1(cs1);
-	std::thread p2(cs2);
+	for (int i = 0; i < threadCount; i++)
+		in.push_back(false);
 
-	p1.join();
-	p2.join();
+	//Copy over in to last
+	last = in;
+
+	for (int i = 0; i < threadCount; i++)
+		threads.push_back(new std::thread(cs, i));
+
+	int x = 0;
 }
 
-void cs1()
+void cs(int index)
 {
 	while (true)
 	{
-		in1 = true;
-		lastCs1 = true;
-		while (in2 && lastCs1)
-		{
-			continue;
-		}
-		std::cout << "In critical section of CS1 \n";
-		in1 = false;
-	}
-}
+		in[index] = true;
+		last[index] = true;
+		lastIndex = index;
 
-void cs2()
-{
-	while (true)
-	{
-		in2 = true;
-		lastCs1 = false;
-		while (in1 && !lastCs1)
+		while (in[index] && last[index] && lastIndex == index)
 		{
 			continue;
 		}
-		std::cout << "In critical section of CS2 \n";
-		in2 = false;
+
+		std::cout << "Criticial section of thread: " << index << "\n";
+		in[index] = false; //Exit
+		last[index] = false;
 	}
 }
