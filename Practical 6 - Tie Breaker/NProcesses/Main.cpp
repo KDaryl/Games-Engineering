@@ -4,9 +4,10 @@
 
 //Public variables
 std::vector<std::thread*> threads;
-std::vector<bool> in, last;
-int threadCount = 10;
-int lastIndex = 0;
+std::vector<int> in, last;
+
+//Change thread count to see amounts of threads working independantly
+int threadCount =6;
 
 //Methods
 void cs(int index);
@@ -14,7 +15,7 @@ void cs(int index);
 void main()
 {
 	for (int i = 0; i < threadCount; i++)
-		in.push_back(false);
+		in.push_back(0);
 
 	//Copy over in to last
 	last = in;
@@ -22,24 +23,29 @@ void main()
 	for (int i = 0; i < threadCount; i++)
 		threads.push_back(new std::thread(cs, i));
 
-	int x = 0;
+	//Needed to keep the program from finishing
+	while (true){}
 }
 
 void cs(int index)
 {
 	while (true)
 	{
-		in[index] = true;
-		last[index] = true;
-		lastIndex = index;
-
-		while (in[index] && last[index] && lastIndex == index)
+		for (int j = 0; j < threadCount - 1; j++)
 		{
-			continue;
+			in[index] = j;
+			last[j] = index;
+
+			for (int k = 0; k < threadCount - 1; k++)
+			{
+				while (last[j] == index && k != index)
+				{
+
+				}
+			}
 		}
 
-		std::cout << "Criticial section of thread: " << index << "\n";
-		in[index] = false; //Exit
-		last[index] = false;
+		std::cout << "Criticial section of thread: " << index + 1 << std::endl;
+		in[index] = 0; //Exit
 	}
 }
