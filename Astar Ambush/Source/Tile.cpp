@@ -1,8 +1,10 @@
 #include "Tile.h"
 
-Tile::Tile(int x, int y, int w, int h)
+Tile::Tile(int x, int y, int w, int h) :
+	m_rect({ x, y, w, h }),
+	m_pos(x, y)
 {
-	m_rect = {x, y, w, h};
+
 }
 
 void Tile::update(double dt)
