@@ -1,7 +1,8 @@
 #include "Game.h"
 
 Game::Game(int fps) :
-	m_msPerFrame(fps / 60.0f), //Get the target fps
+	m_msPerFrame(1.0 / fps), //Get the target fps
+	m_clearRect({ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }),
 	m_window(NULL),
 	m_screenSurface(NULL),
 	m_quit(false)
@@ -10,15 +11,20 @@ Game::Game(int fps) :
 
 void Game::update(double dt)
 {
-	m_input.updateInput();
+	m_input.updateInput(); //Update the input
+	m_gameScene.handleInput(m_input); //Handle Input
+
+	m_gameScene.update(dt);//Update the game scene
 }
 
 void Game::draw()
 {
 	//Clear the screen
+	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
 	SDL_RenderClear(m_renderer);
 
 	//Draw the current scene
+	m_gameScene.draw(m_renderer);
 
 	//Render everything drawn to the renderer
 	SDL_RenderPresent(m_renderer);
@@ -56,6 +62,7 @@ void Game::run()
 	//Create our SDL event variable
 	SDL_Event e;
 	double dt = 0;
+	double frameTime = 0;
 	auto now = std::chrono::system_clock::now();
 	auto before = std::chrono::system_clock::now();
 
@@ -64,14 +71,23 @@ void Game::run()
 	{
 		now = std::chrono::system_clock::now();
 		dt = std::chrono::duration<double>(now - before).count();
-		//Process any events that have occured
-		processEvents(e);
+		frameTime += dt; //Add DT to our frametime
 
-		//Update the game
-		update(dt);
+		//If its time for an update do it
+		if (frameTime >= m_msPerFrame)
+		{
+			//Process any events that have occured
+			processEvents(e);
 
-		//Draw the Game
-		draw();	
+			//Update the game
+			update(dt);
+
+			//Draw the Game
+			draw();
+
+			//Take away ms per frame from our frametime
+			frameTime -= m_msPerFrame;
+		}
 
 		//Make before time equal to the current time
 		before = now;

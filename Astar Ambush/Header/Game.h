@@ -1,7 +1,11 @@
 #ifndef GAME_H
 #define GAME_H
 
+//My classes
 #include "InputHandler.h"
+#include "GameScene.h"
+
+//Others
 #include <SDL.h>
 #include <stdio.h>
 #include <iostream>
@@ -33,8 +37,8 @@ public:
 
 private:
 	//Screen dimension constants
-	const int SCREEN_WIDTH = 1280;
-	const int SCREEN_HEIGHT = 720;
+	const int SCREEN_WIDTH = 1000;
+	const int SCREEN_HEIGHT = 1000;
 
 	//The window we'll be rendering to
 	SDL_Window* m_window;
@@ -44,9 +48,11 @@ private:
 	SDL_Renderer* m_renderer;
 
 	InputHandler m_input;
+	GameScene m_gameScene;
 
 	float m_msPerFrame;
 	bool m_quit;
+	SDL_Rect m_clearRect;
 };
 
 #endif
