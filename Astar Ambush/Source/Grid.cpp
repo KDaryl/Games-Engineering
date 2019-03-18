@@ -7,7 +7,7 @@ Grid::Grid(bool draw) :
 	{
 		for (int j = 0; j < 40; j++)
 		{
-			m_tiles.push_back(new Tile(j * 25, i * 25, 25, 25));
+			m_tiles[std::to_string(j) + "," + std::to_string(i)] = Tile(j * 25, i * 25, 25, 25);
 		}
 	}
 }
@@ -23,6 +23,6 @@ void Grid::draw(SDL_Renderer * renderer)
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
 
 		for (auto& tile : m_tiles)
-			tile->draw(renderer);
+			tile.second.draw(renderer);
 	}
 }

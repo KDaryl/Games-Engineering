@@ -1,11 +1,13 @@
 #include "Unit.h"
 
-Unit::Unit(int x, int y, bool player) :
+Unit::Unit(int x, int y, bool player, Grid& grid) :
+	m_gPtr(&grid),
 	m_pos(x, y),
 	m_isPlayer(player),
 	m_moveSpeed(.05f),
 	m_moveTimer(m_moveSpeed),
-	m_move(false)
+	m_move(true),
+	m_velocity(1, 0)
 {
 	m_rect = { x, y, 25, 25 };
 
@@ -23,7 +25,7 @@ void Unit::update(double dt)
 		if (m_move)
 		{
 			m_moveTimer -= dt;
-			std::cout << m_moveTimer << "\n";
+
 			if (m_moveTimer <= 0)
 			{
 				m_moveTimer = m_moveSpeed;
@@ -31,6 +33,7 @@ void Unit::update(double dt)
 				//Move the player
 				m_pos += m_velocity * 25;
 
+				//Clamp players position into the game area
 				if (m_pos.x < 0)
 					m_pos.x = 0;
 				else if (m_pos.x >= 1000)
@@ -48,7 +51,31 @@ void Unit::update(double dt)
 	}
 	else
 	{
+		if(m_move)
+		{
+			m_moveTimer -= dt;
 
+			if (m_moveTimer <= 0)
+			{
+				m_moveTimer = m_moveSpeed;
+				//Move the player
+				m_pos += m_velocity * 25;
+
+				//Clamp players position into the game area
+				if (m_pos.x < 0)
+					m_pos.x = 0;
+				else if (m_pos.x >= 1000)
+					m_pos.x = 1000 - 25;
+				if (m_pos.y < 0)
+					m_pos.y = 0;
+				else if (m_pos.y >= 1000)
+					m_pos.y = 1000 - 25;
+
+				//Set our position
+				m_rect.x = m_pos.x;
+				m_rect.y = m_pos.y;
+			}
+		}
 	}
 }
 

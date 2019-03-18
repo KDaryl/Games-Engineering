@@ -63,6 +63,8 @@ void Game::run()
 	SDL_Event e;
 	double dt = 0;
 	double frameTime = 0;
+	double counterTime = 0;
+	int frames = 0;
 	auto now = std::chrono::system_clock::now();
 	auto before = std::chrono::system_clock::now();
 
@@ -70,25 +72,37 @@ void Game::run()
 	while (!m_quit)
 	{
 		now = std::chrono::system_clock::now();
-		dt += std::chrono::duration<double>(now - before).count();
+		dt += std::chrono::duration<double>(now - before).count(); //Add to dt
 		frameTime += dt; //Add DT to our frametime
+		counterTime += dt; //Add to our counter time
 
-		//If its time for an update do it
+		//Update the game
+		update(dt);
+
+		//If its time for an draw do it
 		if (frameTime >= m_msPerFrame)
 		{
 			//Process any events that have occured
 			processEvents(e);
-
-			//Update the game
-			update(dt);
 
 			//Draw the Game
 			draw();
 
 			//Take away ms per frame from our frametime
 			frameTime -= m_msPerFrame;
-			dt -= m_msPerFrame;
+			dt -= m_msPerFrame; //Minus frametime from dt
 		}
+
+		frames++;
+
+		//If 1 second has passed
+		if (counterTime >= 1.0f)
+		{
+			counterTime -= 1; //Remove 1 second from the counter
+			std::cout << "FPS: " << frames << "\n";
+			frames = 0; //Reset frames per second
+		}
+
 
 		//Make before time equal to the current time
 		before = now;

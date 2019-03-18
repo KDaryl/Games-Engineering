@@ -2,6 +2,7 @@
 #include "SDL.h"
 #include "Tile.h"
 #include <vector>
+#include <map> >
 
 //40 Tiles - 25x25 tile size
 
@@ -18,5 +19,5 @@ public:
 	bool getDraw() { return m_draw; }
 private:
 	bool m_draw;
-	std::vector<Tile*> m_tiles;
+	std::map<std::string, Tile> m_tiles;
 };
