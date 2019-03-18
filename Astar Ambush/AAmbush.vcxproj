@@ -130,6 +130,7 @@
     <ClCompile Include="Source\InputHandler.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Tile.cpp" />
+    <ClCompile Include="Source\Unit.cpp" />
     <ClCompile Include="Source\Vector2f.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +139,7 @@
     <ClInclude Include="Header\Grid.h" />
     <ClInclude Include="Header\InputHandler.h" />
     <ClInclude Include="Header\Tile.h" />
+    <ClInclude Include="Header\Unit.h" />
     <ClInclude Include="Header\Vector2f.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

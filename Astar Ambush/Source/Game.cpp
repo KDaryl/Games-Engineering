@@ -70,7 +70,7 @@ void Game::run()
 	while (!m_quit)
 	{
 		now = std::chrono::system_clock::now();
-		dt = std::chrono::duration<double>(now - before).count();
+		dt += std::chrono::duration<double>(now - before).count();
 		frameTime += dt; //Add DT to our frametime
 
 		//If its time for an update do it
@@ -87,6 +87,7 @@ void Game::run()
 
 			//Take away ms per frame from our frametime
 			frameTime -= m_msPerFrame;
+			dt -= m_msPerFrame;
 		}
 
 		//Make before time equal to the current time

@@ -30,9 +30,9 @@ void InputHandler::updateInput()
 	
 	//Check keys
 	m_current["W"] = m_keyStates[SDL_SCANCODE_W];
-	m_current["A"] = m_keyStates[SDL_SCANCODE_W];
-	m_current["S"] = m_keyStates[SDL_SCANCODE_W];
-	m_current["D"] = m_keyStates[SDL_SCANCODE_W];
+	m_current["A"] = m_keyStates[SDL_SCANCODE_A];
+	m_current["S"] = m_keyStates[SDL_SCANCODE_S];
+	m_current["D"] = m_keyStates[SDL_SCANCODE_D];
 	m_current["Tab"] = m_keyStates[SDL_SCANCODE_TAB];
 	m_current["LEFT_CLICK"] = m == 1 ? true : false;
 	m_current["RIGHT_CLICK"] = m == 4 ? true : false;

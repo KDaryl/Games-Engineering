@@ -1,7 +1,8 @@
 #include "GameScene.h"
 
 GameScene::GameScene() :
-	m_grid(true)
+	m_grid(true),
+	m_player(500, 500, true)
 {
 
 	//Initialising gloabal variables
@@ -17,24 +18,42 @@ GameScene::GameScene() :
 
 	//Currently executes each thread at least once
 	for (int i = 0; i < threadCount; i++)
-		m_threads.push_back(SDL_CreateThread(agentHandler, "Test", (void *)new ThreadData(i)));
+		m_threads.push_back(SDL_CreateThread(agentHandler, "Test", (void *)new ThreadData(i, m_grid)));
 }
 
 void GameScene::handleInput(InputHandler & input)
 {
 	if (input.isButtonPressed("Tab"))
 		m_grid.setDraw(!m_grid.getDraw());
+
+	//Handkle input for the player
+	m_player.handleInput(input);
 }
 
 void GameScene::update(double dt)
 {
 	m_grid.update(dt);
+
+	//Update player
+	m_player.update(dt);
+
+	//Update all of the units
+	for (auto& unit : m_units)
+		unit.update(dt);
 }
 
 void GameScene::draw(SDL_Renderer * renderer)
 {
 	//Draw grid
 	m_grid.draw(renderer);
+
+	//Draw all other units
+	for (auto& unit : m_units)
+		unit.draw(renderer);
+
+	//Draw the player
+	m_player.draw(renderer);
+
 }
 
 int GameScene::agentHandler(void* data)
@@ -55,14 +74,20 @@ int GameScene::agentHandler(void* data)
 				while (last[j] == index && k != index)
 				{
 					SDL_LockMutex(goalAccess);
-					//std::cout << "Thread: " << index + 1 << " is working\n";
+
+
+
 					SDL_UnlockMutex(goalAccess);
 				}
 			}
 		}
 
-		std::cout << "Criticial section of thread: " << index + 1 << std::endl;
+		//std::cout << "Criticial section of thread: " << index + 1 << std::endl;
 		in[index] = 0; //Exit
 	}
 	return 0;
+}
+
+void ThreadData::aStar(Tile & goal, Tile & from)
+{
 }
