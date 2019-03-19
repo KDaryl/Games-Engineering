@@ -72,7 +72,7 @@ void Game::run()
 	while (!m_quit)
 	{
 		now = std::chrono::system_clock::now();
-		dt += std::chrono::duration<double>(now - before).count(); //Add to dt
+		dt = std::chrono::duration<double>(now - before).count(); //Add to dt
 		frameTime += dt; //Add DT to our frametime
 		counterTime += dt; //Add to our counter time
 
@@ -90,7 +90,6 @@ void Game::run()
 
 			//Take away ms per frame from our frametime
 			frameTime -= m_msPerFrame;
-			dt -= m_msPerFrame; //Minus frametime from dt
 		}
 
 		frames++;

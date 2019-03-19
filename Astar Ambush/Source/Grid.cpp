@@ -26,3 +26,10 @@ void Grid::draw(SDL_Renderer * renderer)
 			tile.second.draw(renderer);
 	}
 }
+
+double Grid::calculateH(Tile& from, Tile & dest)
+{
+	double H = (sqrt((from.m_pos.x - dest.m_pos.x)*(from.m_pos.x - dest.m_pos.x)
+		+ (from.m_pos.y - dest.m_pos.y)*(from.m_pos.y - dest.m_pos.y)));
+	return H;
+}

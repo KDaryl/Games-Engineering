@@ -1,13 +1,15 @@
 #include "Unit.h"
 
-Unit::Unit(int x, int y, bool player, Grid& grid) :
+Unit::Unit(int x, int y, bool player, Grid& grid, Unit& playerUnit) :
+	m_playerPtr(&playerUnit),
 	m_gPtr(&grid),
 	m_pos(x, y),
 	m_isPlayer(player),
 	m_moveSpeed(.05f),
 	m_moveTimer(m_moveSpeed),
 	m_move(true),
-	m_velocity(1, 0)
+	m_velocity(1, 0),
+	m_gridPos(std::to_string(x / 25) + "," + std::to_string(y / 25))
 {
 	m_rect = { x, y, 25, 25 };
 
@@ -15,7 +17,10 @@ Unit::Unit(int x, int y, bool player, Grid& grid) :
 	if (m_isPlayer)
 		m_color = {0, 255, 0, 255};
 	else
+	{
+		m_prevPlayerPos = ",";
 		m_color = { 255, 0, 0, 255 };
+	}
 }
 
 void Unit::update(double dt)
@@ -43,6 +48,8 @@ void Unit::update(double dt)
 				else if(m_pos.y >= 1000)
 					m_pos.y = 1000 - 25;
 
+				m_gridPos = std::to_string(m_pos.x / 25) + "," + std::to_string(m_pos.y / 25);
+
 				//Set our position
 				m_rect.x = m_pos.x;
 				m_rect.y = m_pos.y;
@@ -51,29 +58,52 @@ void Unit::update(double dt)
 	}
 	else
 	{
-		if(m_move)
+		//If we are to move
+		if (m_path.empty() == false)
 		{
-			m_moveTimer -= dt;
-
-			if (m_moveTimer <= 0)
+			//If we have not reached our required estination, move to it
+			if (m_currentPathPos != m_path.end() && m_pos != *m_currentPathPos)
 			{
-				m_moveTimer = m_moveSpeed;
-				//Move the player
-				m_pos += m_velocity * 25;
+				m_moveTimer -= dt;
 
-				//Clamp players position into the game area
-				if (m_pos.x < 0)
-					m_pos.x = 0;
-				else if (m_pos.x >= 1000)
-					m_pos.x = 1000 - 25;
-				if (m_pos.y < 0)
-					m_pos.y = 0;
-				else if (m_pos.y >= 1000)
-					m_pos.y = 1000 - 25;
+				if (m_moveTimer <= 0)
+				{
+					////Set velocity
+					if ((*m_currentPathPos).x > m_pos.x)
+						m_velocity.x = 1;
+					else if ((*m_currentPathPos).x < m_pos.x)
+						m_velocity.x = -1;
+					else if ((*m_currentPathPos).y > m_pos.y)
+						m_velocity.y = 1;
+					else if ((*m_currentPathPos).y < m_pos.y)
+						m_velocity.y = -1;
 
-				//Set our position
-				m_rect.x = m_pos.x;
-				m_rect.y = m_pos.y;
+					m_moveTimer = m_moveSpeed;
+
+					//Move the unit
+					m_pos += m_velocity * 25;
+
+					//Clamp players position into the game area
+					if (m_pos.x < 0)
+						m_pos.x = 0;
+					else if (m_pos.x >= 1000)
+						m_pos.x = 1000 - 25;
+					if (m_pos.y < 0)
+						m_pos.y = 0;
+					else if (m_pos.y >= 1000)
+						m_pos.y = 1000 - 25;
+
+					m_gridPos = std::to_string(m_pos.x / 25) + "," + std::to_string(m_pos.y / 25);
+
+					//Set our position
+					m_rect.x = m_pos.x;
+					m_rect.y = m_pos.y;
+				}
+			}
+			else if (m_pos == *m_currentPathPos)
+			{
+				m_currentPathPos++;
+				m_velocity.zeroVector();
 			}
 		}
 	}
@@ -112,7 +142,7 @@ void Unit::handleInput(InputHandler & input)
 		//Set move to true
 		m_move = true;
 	}
-	else
+	else if(m_isPlayer)
 	{
 		m_move = false;
 		m_moveTimer = m_moveSpeed;

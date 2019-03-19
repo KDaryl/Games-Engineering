@@ -6,6 +6,10 @@
 #include "Grid.h"
 #include "Unit.h"
 #include <random>
+#include <queue>
+#include <ctime>
+#include <chrono>
+#include <bitset>
 
 static bool useThreads;
 static bool startSearch;
@@ -17,16 +21,24 @@ static int threadCount;
 //Hold a vector of enemies to update?
 struct ThreadData
 {
-	ThreadData(int _index, Grid& gPtr, std::vector<Unit*> _units, double& _dt) :
+	ThreadData(int _index, Grid* gPtr, std::vector<Unit*> _units, double& _dt) :
 		index(_index),
-		gridPtr(&gPtr),
+		gridPtr(gPtr),
 		units(_units),
 		dt(&_dt)
 	{
 	}
-
+	struct TileCompare
+	{
+		bool operator()(const Tile* a, const Tile* b)
+		{
+			return a->fCost < b->fCost;
+		}
+	};
 	int randInt(int min, int max);
-	void aStar(Tile& goal, Tile& from);
+	static std::vector<Vector2f> aStar(Tile& goal, Tile& from, Grid* grid);
+	static std::vector<Tile*> neighbours(Tile& from, Grid* grid);
+	
 
 	std::vector<Unit*> units;
 	Grid * gridPtr;
