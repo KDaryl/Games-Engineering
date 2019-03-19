@@ -10,6 +10,7 @@
 #include <ctime>
 #include <chrono>
 #include <bitset>
+#include <unordered_set>
 
 static bool useThreads;
 static bool startSearch;
@@ -32,7 +33,7 @@ struct ThreadData
 	{
 		bool operator()(const Tile* a, const Tile* b)
 		{
-			return a->fCost < b->fCost;
+			return a->hCost < b->hCost;
 		}
 	};
 	int randInt(int min, int max);
@@ -53,7 +54,6 @@ public:
 	void handleInput(InputHandler& input);
 	void update(double dt);
 	void draw(SDL_Renderer* renderer);
-
 	static int agentHandler(void* data);
 	int randInt(int min, int max);
 private:

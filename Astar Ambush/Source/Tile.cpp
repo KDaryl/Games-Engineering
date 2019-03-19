@@ -9,7 +9,8 @@ Tile::Tile(int x, int y, int w, int h) :
 	hCost(0),
 	fCost(0),
 	visited(false),
-	m_isObstacle(false)
+	m_isObstacle(false),
+	closed(false)
 {
 
 }

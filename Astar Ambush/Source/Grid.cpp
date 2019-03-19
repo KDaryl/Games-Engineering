@@ -10,6 +10,33 @@ Grid::Grid(bool draw) :
 			m_tiles[std::to_string(j) + "," + std::to_string(i)] = Tile(j * 25, i * 25, 25, 25);
 		}
 	}
+
+	//Calculate neigbours and populate the vectors of each tile
+	//This will make the program much more performant and will avoid
+	//having to create and populate vectors for every tile running through astar
+	for (auto& tile : m_tiles)
+	{
+		int x = tile.second.m_gridPosVec.x;
+		int y = tile.second.m_gridPosVec.y;
+
+		if (x - 1 >= 0)
+		{
+			tile.second.neighbours.emplace_back(&m_tiles[std::to_string(x - 1) + "," + std::to_string(y)]);
+		}
+		if (x + 1 < 40)
+		{
+			tile.second.neighbours.emplace_back(&m_tiles[std::to_string(x + 1) + "," + std::to_string(y)]);
+		}
+		if (y - 1 >= 0)
+		{
+			tile.second.neighbours.emplace_back(&m_tiles[std::to_string(x) + "," + std::to_string(y - 1)]);
+		}
+		if (y + 1 < 40)
+		{
+			tile.second.neighbours.emplace_back(&m_tiles[std::to_string(x) + "," + std::to_string(y + 1)]);
+		}
+	}
+
 }
 
 void Grid::update(double dt)

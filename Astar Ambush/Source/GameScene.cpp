@@ -48,7 +48,7 @@ GameScene::GameScene() :
 
 		//Currently executes each thread at least once
 		for (int i = 0; i < threadCount; i++)
-			m_threads.push_back(SDL_CreateThread(agentHandler, "Test", (void *)new ThreadData(i, &m_grid, unitsSplit.at(i), m_dt)));
+			m_threads.push_back(SDL_CreateThread(agentHandler, "Test", (void *)new ThreadData(i, (new Grid(false)), unitsSplit.at(i), m_dt)));
 	}
 }
 
@@ -63,9 +63,6 @@ void GameScene::handleInput(InputHandler & input)
 
 void GameScene::update(double dt)
 {
-	for (int i = 0; i < ttu.size(); i++)
-		ttu.at(i) = true;
-
 	m_dt = dt;
 	m_grid.update(dt);
 
@@ -77,24 +74,28 @@ void GameScene::update(double dt)
 		//Update all of the units if we arent using threads to do it
 		for (auto& unit : m_units)
 		{
-			unit->setVelocity(0, 0);
-
-			auto direct = randInt(0, 1);
-			auto val = randInt(0, 1);
-
-			if (direct == 0)
+			if (unit->m_prevPlayerPos != unit->playerPtr()->gridPos())
 			{
-				unit->setVelocity(0, val == 0 ? -1 : 1);
-			}
-			else
-			{
-				unit->setVelocity(val == 0 ? -1 : 1, 0);
+				unit->setPath(ThreadData::aStar(m_grid.m_tiles[unit->playerPtr()->gridPos()], m_grid.m_tiles[unit->gridPos()], &m_grid));
+				unit->m_prevPlayerPos = unit->playerPtr()->gridPos();
+				unit->setCanUpdate(true);
 			}
 
 			//Update the unit on this thread
 			unit->update(dt);
 		}
 	}
+	else
+	{
+		//Update all of the units if we arent using threads to do it
+		for (auto& unit : m_units)
+		{
+			unit->update(dt);
+		}
+	}
+
+	for (int i = 0; i < ttu.size(); i++)
+		ttu.at(i) = true;
 }
 
 void GameScene::draw(SDL_Renderer * renderer)
@@ -108,7 +109,6 @@ void GameScene::draw(SDL_Renderer * renderer)
 
 	//Draw the player
 	m_player.draw(renderer);
-
 }
 
 int GameScene::agentHandler(void* data)
@@ -118,7 +118,7 @@ int GameScene::agentHandler(void* data)
 	int index = threadData->index;
 	while (true)
 	{
-		for (int j = 0; j < threadCount - 1; j++)
+		/*for (int j = 0; j < threadCount - 1; j++)
 		{
 			in[index] = j;
 			last[j] = index;
@@ -126,9 +126,9 @@ int GameScene::agentHandler(void* data)
 			for (int k = 0; k < threadCount - 1; k++)
 			{
 				while (last[j] == index && k != index)
-				{
+				{*/
 					SDL_LockMutex(goalAccess);
-
+					
 					//If we are to update the units for this thread, then do it
 					if (ttu.at(index))
 					{
@@ -136,10 +136,12 @@ int GameScene::agentHandler(void* data)
 						{
 							Unit* unit = threadData->units.at(i);
 
-							if (unit->m_prevPlayerPos != unit->playerPtr()->gridPos())
+							if (unit->m_prevPlayerPos != unit->playerPtr()->gridPos() && !unit->playerPtr()->moving())
 							{
+								unit->setCanUpdate(false);
 								unit->setPath(threadData->aStar(threadData->gridPtr->m_tiles[unit->playerPtr()->gridPos()], threadData->gridPtr->m_tiles[unit->gridPos()], threadData->gridPtr));
 								unit->m_prevPlayerPos = unit->playerPtr()->gridPos();
+								unit->setCanUpdate(true);
 							}
 							
 							//Update the unit on this thread
@@ -150,11 +152,11 @@ int GameScene::agentHandler(void* data)
 					}			
 
 					SDL_UnlockMutex(goalAccess);
-				}
-			}
-		}
+		//		}
+		//	}
+		//}
 
-		std::cout << "Criticial section of thread: " << index + 1 << std::endl;
+		//std::cout << "Criticial section of thread: " << index + 1 << std::endl;
 		in[index] = 0; //Exit
 	}
 	return 0;
@@ -192,6 +194,7 @@ std::vector<Vector2f> ThreadData::aStar(Tile & goal, Tile & from, Grid* grid)
 			t.fCost = std::numeric_limits<float>().max() - 100000;
 			t.gCost = std::numeric_limits<float>().max() - 100000;;
 			t.hCost = std::numeric_limits<float>().max() - 100000;;
+			t.closed = false; //Set closed to false
 			t.previous = nullptr; //Reset previous ptr
 			t.visited = false; //Set visited to false
 		}
@@ -208,6 +211,7 @@ std::vector<Vector2f> ThreadData::aStar(Tile & goal, Tile & from, Grid* grid)
 	{
 		auto current = queue.top(); //Get the value on the tope of the queue
 	
+		current->closed = true;
 		//If we found the goal
 		if (current == &goal)
 		{
@@ -224,11 +228,15 @@ std::vector<Vector2f> ThreadData::aStar(Tile & goal, Tile & from, Grid* grid)
 			break; //Break while loop
 		}
 
-		auto nbs = neighbours(*current, grid);
+		//auto nbs = neighbours(*current, grid);
 
 		//Loop through neighbours
-		for (auto& tile : nbs)
+		for (auto& tile : current->neighbours)
 		{
+			//If the tile is a wall or its closed skip it
+			if (tile->m_isObstacle || tile->closed)
+				continue;
+
 			auto newG = current->gCost + 1.0f;
 			auto newH = grid->calculateH(*tile, goal);
 			auto newF = newG + newH;
@@ -240,8 +248,13 @@ std::vector<Vector2f> ThreadData::aStar(Tile & goal, Tile & from, Grid* grid)
 				tile->gCost = newG;
 				tile->hCost = newH;
 				tile->previous = current;
-				tile->visited = true;
-				queue.push(tile);
+				
+				//Only push it to the heap if it hasnt been visited yet
+				if (tile->visited == false)
+				{
+					queue.push(tile);
+					tile->visited = true;
+				}
 			}
 		}
 
@@ -254,33 +267,25 @@ std::vector<Vector2f> ThreadData::aStar(Tile & goal, Tile & from, Grid* grid)
 
 std::vector<Tile*> ThreadData::neighbours(Tile & from, Grid* grid)
 {
-	std::vector<Tile*> neighbours;
+	std::vector<Tile*> neighbours = {};
 	int x = from.m_gridPosVec.x;
 	int y = from.m_gridPosVec.y;
 
 	if (x - 1 >= 0)
 	{
-		auto tile = grid->m_tiles[std::to_string(x - 1) + "," + std::to_string(y)];
-		if (tile.m_isObstacle == false)
-			neighbours.push_back(&grid->m_tiles[std::to_string(x - 1) + "," + std::to_string(y)]);
+		neighbours.emplace_back(&grid->m_tiles[std::to_string(x - 1) + "," + std::to_string(y)]);
 	}
 	if (x + 1 < 40)
 	{
-		auto tile = grid->m_tiles[std::to_string(x + 1) + "," + std::to_string(y)];
-		if (tile.m_isObstacle == false)
-			neighbours.push_back(&grid->m_tiles[std::to_string(x + 1) + "," + std::to_string(y)]);
+		neighbours.emplace_back(&grid->m_tiles[std::to_string(x + 1) + "," + std::to_string(y)]);
 	}
 	if (y - 1 >= 0)
 	{
-		auto tile = grid->m_tiles[std::to_string(x) + "," + std::to_string(y - 1)];
-		if (tile.m_isObstacle == false)
-			neighbours.push_back(&grid->m_tiles[std::to_string(x) + "," + std::to_string(y - 1)]);
+		neighbours.emplace_back(&grid->m_tiles[std::to_string(x) + "," + std::to_string(y - 1)]);
 	}
 	if (y + 1 < 40)
 	{
-		auto tile = grid->m_tiles[std::to_string(x) + "," + std::to_string(y + 1)];
-		if (tile.m_isObstacle == false)
-			neighbours.push_back(&grid->m_tiles[std::to_string(x) + "," + std::to_string(y + 1)]);
+		neighbours.emplace_back(&grid->m_tiles[std::to_string(x) + "," + std::to_string(y + 1)]);
 	}
 
 	return neighbours;

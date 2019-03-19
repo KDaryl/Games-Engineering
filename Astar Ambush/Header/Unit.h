@@ -16,14 +16,16 @@ public:
 
 	void setPath(std::vector<Vector2f> path) { m_path = path, m_currentPathPos = m_path.begin(); }
 	void setVelocity(int x, int y) { m_velocity = Vector2f(x, y); }
+	bool moving() { return m_move; }
 	std::string m_prevPlayerPos;
 	Unit* playerPtr() { return m_playerPtr; }
+	void setCanUpdate(bool b) { m_canUpdate = b; }
 private:
 	std::vector<Vector2f>::iterator m_currentPathPos;
 	std::vector<Vector2f> m_path;
 	Unit* m_playerPtr;
 	Grid* m_gPtr;
-	bool m_isPlayer, m_move;
+	bool m_isPlayer, m_move, m_canUpdate;
 	float m_moveSpeed, m_moveTimer;
 	Vector2f m_pos, m_velocity;
 	std::string m_gridPos;
