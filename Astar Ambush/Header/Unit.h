@@ -21,13 +21,16 @@ public:
 	Unit* playerPtr() { return m_playerPtr; }
 	void setCanUpdate(bool b) { m_canUpdate = b; }
 	void setEndPos(Vector2f pos) { endPos = pos; };
+	void decrementHealth(float val);
 
 	static int pathCost;
 
 	float unitPathCost;
 
 	Vector2f getPos() { return m_pos; }
+	int getHealth() { return m_health; }
 private:
+	float m_health;
 	Vector2f endPos;
 	std::vector<Vector2f>::iterator m_currentPathPos;
 	std::vector<Vector2f> m_path;

@@ -5,10 +5,9 @@ Unit::Unit(int x, int y, bool player, Grid& grid, Unit& playerUnit) :
 	m_gPtr(&grid),
 	m_pos(x, y),
 	m_isPlayer(player),
-	m_moveSpeed(.05f),
-	m_moveTimer(m_moveSpeed),
 	m_move(true),
 	m_velocity(0, 0),
+	m_health(100),
 	m_gridPos(std::to_string(x / 25) + "," + std::to_string(y / 25))
 {
 	Unit::pathCost++; //Increase path cost
@@ -19,15 +18,19 @@ Unit::Unit(int x, int y, bool player, Grid& grid, Unit& playerUnit) :
 	//Set colour based on our is player boolean
 	if (m_isPlayer)
 	{
+		m_moveSpeed = .05f,	
 		m_canUpdate = true;
 		m_color = { 0, 255, 0, 255 };
 	}
 	else
 	{
+		m_moveSpeed = .1f,
 		m_canUpdate = false;
 		m_prevPlayerPos = ",";
 		m_color = { 255, 0, 0, 255 };
 	}
+
+	m_moveTimer = m_moveSpeed;
 }
 
 void Unit::update(double dt)
@@ -134,7 +137,31 @@ void Unit::update(double dt)
 void Unit::draw(SDL_Renderer * renderer)
 {
 	SDL_SetRenderDrawColor(renderer, m_color.x, m_color.y, m_color.w, m_color.h);
-	SDL_RenderFillRect(renderer, &m_rect);
+
+	if (m_isPlayer) //If player draw as circle
+	{
+		for (int w = 0; w < 12.5f * 2; w++)
+		{
+			for (int h = 0; h < 12.5f * 2; h++)
+			{
+				int dx = 12.5f - w; // horizontal offset
+				int dy = 12.5f - h; // vertical offset
+				if ((dx*dx + dy * dy) <= (12.5f * 12.5f))
+				{
+					SDL_RenderDrawPoint(renderer, m_pos.x + dx + 12.5f,
+						m_pos.y + dy + 12.5f);
+				}
+			}
+		}
+	}
+	else //If unit draw as square
+	{
+		SDL_RenderFillRect(renderer, &m_rect);
+	}
+
+
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderDrawPoint(renderer, m_pos.x + 12.5f, m_pos.y + 12.5f);
 }
 
 void Unit::handleInput(InputHandler & input)
@@ -169,4 +196,12 @@ void Unit::handleInput(InputHandler & input)
 		m_move = false;
 		m_moveTimer = m_moveSpeed;
 	}
+}
+
+void Unit::decrementHealth(float val)
+{
+	m_health -= val;
+
+	if (m_health < 0)
+		m_health = 0;
 }

@@ -10,7 +10,7 @@ GameScene::GameScene() :
 
 	//Set wheter to use threads or not
 	useThreads = true;
-	threadCount = 4;
+	threadCount = 2;
 	 
 	int noOfUnits = 400;
 
@@ -137,7 +137,8 @@ int GameScene::agentHandler(void* data)
 			{
 				while (last[j] == index && k != index)
 				{
-					
+					//Waiting for threads turn to execute#
+					//Using petersons algorithm to ahere to at most once
 				}
 			}
 		}
@@ -167,8 +168,12 @@ int GameScene::agentHandler(void* data)
 					unit->setCanUpdate(true);
 				}
 
-				//Update the unit on this thread
-				//unit->update(*threadData->dt);
+				//Check collision with player and unit
+				if (unit->getPos() == unit->playerPtr()->getPos())
+				{
+					unit->playerPtr()->decrementHealth(10 * *threadData->dt);
+					std::cout << "Player health: " << unit->playerPtr()->getHealth() << "\n";
+				}
 			}
 
 			ttu.at(index) = false; //Set our thread to update as false
@@ -332,8 +337,8 @@ std::vector<Vector2f> ThreadData::aStar(Tile &_goal, Tile & from, Grid* grid, Un
 		queue.pop();
 	}
 
-	if (foundPath == false)
-		std::cout << "No path found to goal for some reason? \n";
+	/*if (foundPath == false)
+		std::cout << "No path found to goal for some reason? \n";*/
 
 	return path;
 }

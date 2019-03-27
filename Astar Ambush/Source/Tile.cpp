@@ -23,8 +23,13 @@ void Tile::update(double dt)
 void Tile::draw(SDL_Renderer * renderer)
 {
 	SDL_SetRenderDrawColor(renderer, m_color.x, m_color.y, m_color.w, m_color.h);
-	if(m_isObstacle)
+	if (m_isObstacle)
+	{
 		SDL_RenderFillRect(renderer, &m_rect);
+		//Draw line through wall to show drawing of lines?
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderDrawLine(renderer, m_pos.x + 12.5f, m_pos.y, m_pos.x + 12.5f, m_pos.y + 25);
+	}
 	else
 		SDL_RenderDrawRect(renderer, &m_rect);
 }
