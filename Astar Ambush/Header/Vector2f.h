@@ -34,6 +34,7 @@ public:
 
 	//Vector operations
 	float distance(Vector2f& v1, Vector2f& v2);
+	float distance(const Vector2f& v1, const Vector2f& v2);
 	float distance(Vector2f& v2);
 	float magnitude();
 	float sqrdMagnitude();

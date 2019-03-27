@@ -7,7 +7,14 @@ Grid::Grid(bool draw) :
 	{
 		for (int j = 0; j < 40; j++)
 		{
-			m_tiles[std::to_string(j) + "," + std::to_string(i)] = Tile(j * 25, i * 25, 25, 25);
+			auto newTile = Tile(j * 25, i * 25, 25, 25);
+
+			if ((i < 35 && j == 6) 
+			|| (i > 4 && i < 35 && j == 19)
+			|| (i > 1 && i < 33 && j == 35))
+				newTile.setObstacle(true);
+
+			m_tiles[std::to_string(j) + "," + std::to_string(i)] = newTile;
 		}
 	}
 
@@ -54,9 +61,21 @@ void Grid::draw(SDL_Renderer * renderer)
 	}
 }
 
+void Grid::resetSpotsBools()
+{
+	for (auto& tile : m_tiles)
+	{
+		if(tile.second.m_isObstacle == false)
+			tile.second.spotTaken = false;
+	}
+}
+
+void Grid::setResetSpotsTaken(bool b)
+{
+	m_resetSpotsTaken = b;
+}
+
 double Grid::calculateH(Tile& from, Tile & dest)
 {
-	double H = (sqrt((from.m_pos.x - dest.m_pos.x)*(from.m_pos.x - dest.m_pos.x)
-		+ (from.m_pos.y - dest.m_pos.y)*(from.m_pos.y - dest.m_pos.y)));
-	return H;
+	return std::abs((from.m_pos.x - dest.m_pos.x) / 25) + std::abs((from.m_pos.y - dest.m_pos.y) / 25);
 }

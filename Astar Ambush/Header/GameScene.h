@@ -33,13 +33,20 @@ struct ThreadData
 	{
 		bool operator()(const Tile* a, const Tile* b)
 		{
-			return a->hCost < b->hCost;
+			return a->fCost < b->fCost;
 		}
 	};
+
+	struct TilePosCompare
+	{
+		bool operator()(const Tile* a, const Tile* b)
+		{
+			return a->goalDist < b->goalDist;
+		}
+	};
+
 	int randInt(int min, int max);
-	static std::vector<Vector2f> aStar(Tile& goal, Tile& from, Grid* grid);
-	static std::vector<Tile*> neighbours(Tile& from, Grid* grid);
-	
+	static std::vector<Vector2f> aStar(Tile& goal, Tile& from, Grid* grid, Unit& unit);
 
 	std::vector<Unit*> units;
 	Grid * gridPtr;
